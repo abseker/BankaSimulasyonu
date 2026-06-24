@@ -1,4 +1,6 @@
-﻿Hesap hesabim = new Hesap();
+﻿Musteri musterim = new Musteri("Berk");
+musterim.HesapAc("Berk");
+Hesap hesabim = musterim.Hesaplar[0];
 
 bool calisiyor = true;
 
@@ -10,6 +12,8 @@ while (calisiyor)
     Console.WriteLine("3. Bakiye Goruntule");
     Console.WriteLine("4. İslem Gecmisi");
     Console.WriteLine("5. Cikis");
+    Console.WriteLine("6. Yeni Hesap Ac");
+    Console.WriteLine("7. Tum Hesaplari Goster");
     Console.WriteLine("Secim: ");
 
     string secim = Console.ReadLine() ?? "";
@@ -20,18 +24,18 @@ while (calisiyor)
             Console.WriteLine("Yatirilacak Tutar: ");
             double yatirilacak = Convert.ToDouble(Console.ReadLine());
             hesabim.ParaYatir(yatirilacak);
-            Console.WriteLine($"Yeni Bakiye: {hesabim.Bakiye} TL");
+            Console.WriteLine($"Yeni Bakiye: {hesabim.BakiyeGoster()} TL");
             break;
-        
+
         case "2":
             Console.WriteLine("Cekilecek Tutar: ");
             double cekilecek = Convert.ToDouble(Console.ReadLine());
             hesabim.ParaCek(cekilecek);
-            Console.WriteLine($"Yeni Bakiye: {hesabim.Bakiye} TL");
+            Console.WriteLine($"Yeni Bakiye: {hesabim.BakiyeGoster()} TL");
             break;
-        
+
         case "3":
-            Console.WriteLine($"Bakiye: {hesabim.Bakiye} TL");
+            Console.WriteLine($"Bakiye: {hesabim.BakiyeGoster()} TL");
             break;
 
         case "4":
@@ -43,39 +47,54 @@ while (calisiyor)
             calisiyor = false;
             break;
 
+        case "6":
+            Console.WriteLine("Yeni hesap sahibinin adi:");
+            string yeniSahip = Console.ReadLine() ?? "";
+            musterim.HesapAc(yeniSahip);
+            break;
+
+        case "7":
+            musterim.TumHesaplariGoster();
+            break;
+
         default:
             Console.WriteLine("Gecersiz Secim!");
             break;
     }
 }
 
-hesabim.ParaYatir(500);
-Console.WriteLine($"500 TL yatirildi. Yeni Bakiye : {hesabim.Bakiye}");
-
-hesabim.ParaCek(250);
-Console.WriteLine($"200 TL cekildi. Yeni Bakiyeniz: {hesabim.Bakiye}");
-
-hesabim.GecmisGoster();
 class Hesap
 {
-    public double Bakiye = 0;
+    private double bakiye = 0;
     public List<string> Islemler = new List<string>();
+    public string SahipAdi;
+
+    public Hesap(string sahipAdi)
+    {
+        SahipAdi = sahipAdi;
+        Console.WriteLine($"{sahipAdi} adina hesap acildi.");
+    }
+
+    public double BakiyeGoster()
+    {
+        return bakiye;
+    }
 
     public void ParaYatir(double tutar)
     {
-        Bakiye = Bakiye + tutar;
+        bakiye = bakiye + tutar;
         Islemler.Add($"{tutar} TL yatirildi.");
     }
 
     public void ParaCek(double tutar)
     {
-        if (tutar > Bakiye)
+        if (tutar > bakiye)
         {
             Console.WriteLine("Yetersiz bakiye!");
             return;
         }
 
-        Bakiye = Bakiye - tutar;
+        bakiye = bakiye - tutar;
         Islemler.Add($"{tutar} TL cekildi");
     }
 
@@ -85,6 +104,31 @@ class Hesap
         foreach (string islem in Islemler)
         {
             Console.WriteLine($"- {islem}");
+        }
+    }
+}
+class Musteri
+{
+    public string Ad;
+    public List<Hesap> Hesaplar = new List<Hesap>();
+
+    public Musteri(string ad)
+    {
+        Ad = ad;
+    }
+
+    public void HesapAc(string sahipAdi)
+    {
+        Hesap yeniHesap = new Hesap(sahipAdi);
+        Hesaplar.Add(yeniHesap);
+    }
+
+    public void TumHesaplariGoster()
+    {
+        Console.WriteLine($"{Ad} adli musterinin hesaplari: ");
+        foreach (Hesap hesap in Hesaplar)
+        {
+            Console.WriteLine($"- {hesap.SahipAdi}: {hesap.BakiyeGoster()} TL");
         }
     }
 }
